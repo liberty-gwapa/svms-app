@@ -1,0 +1,44 @@
+package com.svms.app.data.repository;
+
+import dagger.internal.DaggerGenerated;
+import dagger.internal.Factory;
+import dagger.internal.QualifierMetadata;
+import dagger.internal.ScopeMetadata;
+import io.github.jan.supabase.SupabaseClient;
+import javax.annotation.processing.Generated;
+import javax.inject.Provider;
+
+@ScopeMetadata("javax.inject.Singleton")
+@QualifierMetadata
+@DaggerGenerated
+@Generated(
+    value = "dagger.internal.codegen.ComponentProcessor",
+    comments = "https://dagger.dev"
+)
+@SuppressWarnings({
+    "unchecked",
+    "rawtypes",
+    "KotlinInternal",
+    "KotlinInternalInJava",
+    "cast"
+})
+public final class StudentRepository_Factory implements Factory<StudentRepository> {
+  private final Provider<SupabaseClient> supabaseClientProvider;
+
+  public StudentRepository_Factory(Provider<SupabaseClient> supabaseClientProvider) {
+    this.supabaseClientProvider = supabaseClientProvider;
+  }
+
+  @Override
+  public StudentRepository get() {
+    return newInstance(supabaseClientProvider.get());
+  }
+
+  public static StudentRepository_Factory create(Provider<SupabaseClient> supabaseClientProvider) {
+    return new StudentRepository_Factory(supabaseClientProvider);
+  }
+
+  public static StudentRepository newInstance(SupabaseClient supabaseClient) {
+    return new StudentRepository(supabaseClient);
+  }
+}
