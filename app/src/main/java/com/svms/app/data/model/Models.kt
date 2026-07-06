@@ -246,3 +246,14 @@ data class ProfileSvms(
     val profileUrl: String? = null,
     val date: String? = null
 )
+
+@Serializable
+data class Department(
+    @SerialName("department_id")
+    val departmentId: Long,
+    @SerialName("department_key")
+    val departmentKey: String,
+    val title: String,
+    @SerialName("is_active")
+    val isActive: Boolean = true
+)

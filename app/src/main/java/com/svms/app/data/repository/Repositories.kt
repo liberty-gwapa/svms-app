@@ -316,6 +316,20 @@ class ViolationRepository @Inject constructor(
     private val _violations = MutableStateFlow<List<Violation>>(emptyList())
     val violations: Flow<List<Violation>> = _violations.asStateFlow()
 
+    suspend fun getDepartments(): Result<List<Department>> = withContext(Dispatchers.IO) {
+        try {
+            Log.d("SVMS_DEBUG", "Fetching departments from Supabase...")
+            val depts = supabaseClient.postgrest["departments"]
+                .select()
+                .decodeList<Department>()
+            Log.d("SVMS_DEBUG", "Fetched ${depts.size} departments: ${depts.map { it.departmentKey }}")
+            Result.success(depts)
+        } catch (e: Exception) {
+            Log.e("SVMS_DEBUG", "Error fetching departments", e)
+            Result.failure(e)
+        }
+    }
+
     suspend fun getViolationTypes(): Result<List<ViolationType>> = withContext(Dispatchers.IO) {
         try {
             val types = supabaseClient.postgrest["violation_types"]
@@ -345,66 +359,83 @@ class ViolationRepository @Inject constructor(
             // 2. Filter for guard reports
             val guardViolations = violations.filter { it.reportedByGuard != null }
 
-            // 3. Batch fetch Students to avoid N+1 queries
-            val studentIds = guardViolations.map { it.studentId }.distinct()
-            val students = if (studentIds.isNotEmpty()) {
-                supabaseClient.postgrest["students"]
-                    .select { filter { isIn("school_id", studentIds) } }
-                    .decodeList<Student>()
-                    .associateBy { it.schoolId }
-            } else emptyMap()
-
-            // 4. Batch fetch Violation Types
-            val typeIds = guardViolations.map { it.violationTypeId }.distinct()
-            val types = if (typeIds.isNotEmpty()) {
-                supabaseClient.postgrest["violation_types"]
-                    .select { filter { isIn("violation_type_id", typeIds) } }
-                    .decodeList<ViolationType>()
-                    .associateBy { it.violationTypeId }
-            } else emptyMap()
-
-            // 5. Batch fetch Users (Guards)
-            val guardIds = guardViolations.mapNotNull { it.reportedByGuard }.distinct()
-            val guards = if (guardIds.isNotEmpty()) {
-                supabaseClient.postgrest["users"]
-                    .select { filter { isIn("user_id", guardIds) } }
-                    .decodeList<User>()
-                    .associateBy { it.userId }
-            } else emptyMap()
-
-            // 6. Enrich violations
-            val enrichedViolations = guardViolations.map { violation ->
-                val student = students[violation.studentId]
-                val type = types[violation.violationTypeId]
-                val guard = guards[violation.reportedByGuard]
-
-                violation.apply {
-                    studentName = student?.fullName ?: "Unknown Student"
-                    studentCollege = student?.college
-                    studentCourse = student?.course
-                    violationType = type?.name ?: "Unknown Type"
-                    violationCategory = if ((type?.severity ?: 1) <= 1) ViolationCategory.MINOR else ViolationCategory.MAJOR
-                    guardName = guard?.fullName ?: "Unknown Guard"
-                    
-                    // Directly use evidenceUrl column
-                    evidenceImageUrl = if (!violation.evidenceUrl.isNullOrBlank()) {
-                        Log.d("SVMS_DEBUG", "Found image URL for violation ${violation.violationId}: ${violation.evidenceUrl}")
-                        violation.evidenceUrl
-                    } else null
-                    
-                    // Map database 'place' to local description or keep it separate if UI supports it
-                    if (!violation.place.isNullOrBlank()) {
-                        description = "Location: ${violation.place}\n${violation.description ?: ""}"
-                    }
-                }
-            }
-
-            Log.d("SVMS_DEBUG", "Successfully enriched ${enrichedViolations.size} violations")
-            _violations.value = enrichedViolations
-            Result.success(enrichedViolations)
+            val enriched = enrichViolationList(guardViolations)
+            _violations.value = enriched
+            Result.success(enriched)
         } catch (e: Exception) {
             Log.e("SVMS_DEBUG", "Fetch Today Violations Error", e)
             Result.failure(e)
+        }
+    }
+
+    suspend fun fetchAllTimeGuardViolations(guardId: String): Result<List<Violation>> = withContext(Dispatchers.IO) {
+        try {
+            Log.d("SVMS_DEBUG", "Fetching all-time violations for guard: $guardId")
+            
+            val violations = supabaseClient.postgrest["violations"]
+                .select {
+                    filter {
+                        eq("reported_by_guard", guardId)
+                    }
+                    order("violation_date", order = io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                    order("violation_time", order = io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                }
+                .decodeList<Violation>()
+            
+            val enriched = enrichViolationList(violations)
+            Result.success(enriched)
+        } catch (e: Exception) {
+            Log.e("SVMS_DEBUG", "Fetch All Time Violations Error", e)
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun enrichViolationList(violations: List<Violation>): List<Violation> {
+        // 3. Batch fetch Students to avoid N+1 queries
+        val studentIds = violations.map { it.studentId }.distinct()
+        val students = if (studentIds.isNotEmpty()) {
+            supabaseClient.postgrest["students"]
+                .select { filter { isIn("school_id", studentIds) } }
+                .decodeList<Student>()
+                .associateBy { it.schoolId }
+        } else emptyMap()
+
+        // 4. Batch fetch Violation Types
+        val typeIds = violations.map { it.violationTypeId }.distinct()
+        val types = if (typeIds.isNotEmpty()) {
+            supabaseClient.postgrest["violation_types"]
+                .select { filter { isIn("violation_type_id", typeIds) } }
+                .decodeList<ViolationType>()
+                .associateBy { it.violationTypeId }
+        } else emptyMap()
+
+        // 5. Batch fetch Users (Guards)
+        val guardIds = violations.mapNotNull { it.reportedByGuard }.distinct()
+        val guards = if (guardIds.isNotEmpty()) {
+            supabaseClient.postgrest["users"]
+                .select { filter { isIn("user_id", guardIds) } }
+                .decodeList<User>()
+                .associateBy { it.userId }
+        } else emptyMap()
+
+        // 6. Enrich violations
+        return violations.map { violation ->
+            val student = students[violation.studentId]
+            val type = types[violation.violationTypeId]
+            val guard = guards[violation.reportedByGuard]
+
+            violation.apply {
+                studentName = student?.fullName ?: "Unknown Student"
+                studentCollege = student?.college
+                studentCourse = student?.course
+                violationType = type?.name ?: "Unknown Type"
+                violationCategory = if ((type?.severity ?: 1) <= 1) ViolationCategory.MINOR else ViolationCategory.MAJOR
+                guardName = guard?.fullName ?: "Unknown Guard"
+                
+                evidenceImageUrl = if (!violation.evidenceUrl.isNullOrBlank()) {
+                    violation.evidenceUrl
+                } else null
+            }
         }
     }
 

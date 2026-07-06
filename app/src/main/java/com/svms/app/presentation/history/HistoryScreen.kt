@@ -174,59 +174,85 @@ fun HistoryScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        // Total incidents
+                        // Today's Reports
                         Card(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { viewModel.setFilter(HistoryFilter.TODAY) },
                             shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = CardWhite),
-                            elevation = CardDefaults.cardElevation(2.dp)
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (state.currentFilter == HistoryFilter.TODAY) PurplePrimary else CardWhite
+                            ),
+                            elevation = CardDefaults.cardElevation(if (state.currentFilter == HistoryFilter.TODAY) 4.dp else 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(18.dp)) {
-                                SectionLabel("TOTAL INCIDENTS")
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    state.totalIncidents.toString(),
-                                    fontSize = 38.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = TextPrimary,
-                                    letterSpacing = (-1).sp
-                                )
-                            }
-                        }
-
-                        // Pending review
-                        Card(
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = PurplePrimary),
-                            elevation = CardDefaults.cardElevation(4.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(18.dp)) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .width(3.dp)
-                                            .height(12.dp)
-                                            .clip(RoundedCornerShape(1.5.dp))
-                                            .background(GoldAccent)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (state.currentFilter == HistoryFilter.TODAY) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(3.dp)
+                                                .height(12.dp)
+                                                .clip(RoundedCornerShape(1.5.dp))
+                                                .background(GoldAccent)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                    }
                                     Text(
-                                        text = "PENDING REVIEW",
+                                        text = "TODAY'S REPORTS",
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = GoldAccent,
+                                        color = if (state.currentFilter == HistoryFilter.TODAY) GoldAccent else TextSecondary,
                                         letterSpacing = 0.8.sp
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    String.format("%02d", state.pendingReview),
+                                    state.todayReportsCount.toString(),
                                     fontSize = 38.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = Color.White,
+                                    color = if (state.currentFilter == HistoryFilter.TODAY) Color.White else TextPrimary,
+                                    letterSpacing = (-1).sp
+                                )
+                            }
+                        }
+
+                        // Total Incidents
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { viewModel.setFilter(HistoryFilter.ALL_TIME) },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (state.currentFilter == HistoryFilter.ALL_TIME) PurplePrimary else CardWhite
+                            ),
+                            elevation = CardDefaults.cardElevation(if (state.currentFilter == HistoryFilter.ALL_TIME) 4.dp else 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(18.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    if (state.currentFilter == HistoryFilter.ALL_TIME) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(3.dp)
+                                                .height(12.dp)
+                                                .clip(RoundedCornerShape(1.5.dp))
+                                                .background(GoldAccent)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                    }
+                                    Text(
+                                        text = "TOTAL INCIDENTS",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (state.currentFilter == HistoryFilter.ALL_TIME) GoldAccent else TextSecondary,
+                                        letterSpacing = 0.8.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    String.format("%02d", state.totalIncidents),
+                                    fontSize = 38.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = if (state.currentFilter == HistoryFilter.ALL_TIME) Color.White else TextPrimary,
                                     letterSpacing = (-1).sp
                                 )
                             }
@@ -245,34 +271,65 @@ fun HistoryScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Recent Submissions", 
+                        if (state.currentFilter == HistoryFilter.TODAY) "Today's Submissions" else "All-Time Submissions", 
                         fontSize = 16.sp, 
                         fontWeight = FontWeight.Bold, 
                         color = TextPrimary,
                         letterSpacing = (-0.2).sp
                     )
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFFE8F5E9))
-                            .border(1.dp, SuccessGreen.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
-                            .padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
+
+                    // Department Dropdown (Relocated from left to right, replacing LIVE FEED)
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        Row(
                             modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(SuccessGreen)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            "LIVE FEED", 
-                            fontSize = 10.sp, 
-                            fontWeight = FontWeight.Bold, 
-                            color = SuccessGreen, 
-                            letterSpacing = 0.8.sp
-                        )
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(PurpleContainer.copy(alpha = 0.5f))
+                                .border(1.dp, PurplePrimary.copy(alpha = 0.15f), RoundedCornerShape(20.dp))
+                                .clickable { expanded = true }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = state.selectedDepartment?.uppercase() ?: "ALL DEPARTMENTS",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = PurplePrimary,
+                                letterSpacing = 0.5.sp
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = PurplePrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                                .background(CardWhite)
+                                .widthIn(min = 150.dp)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("ALL DEPARTMENTS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = PurplePrimary) },
+                                onClick = {
+                                    viewModel.setSelectedDepartment(null)
+                                    expanded = false
+                                }
+                            )
+                            state.departments.forEach { dept ->
+                                DropdownMenuItem(
+                                    text = { Text(dept.departmentKey.uppercase(), fontSize = 11.sp, fontWeight = FontWeight.Medium) },
+                                    onClick = {
+                                        viewModel.setSelectedDepartment(dept.departmentKey)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -288,7 +345,7 @@ fun HistoryScreen(
                         CircularProgressIndicator(color = PurplePrimary, modifier = Modifier.size(36.dp))
                     }
                 }
-            } else if (state.violations.isEmpty()) {
+            } else if (state.filteredViolations.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -305,7 +362,7 @@ fun HistoryScreen(
                             )
                             Spacer(modifier = Modifier.height(14.dp))
                             Text(
-                                "No violations recorded yet today.", 
+                                if (state.currentFilter == HistoryFilter.TODAY) "No violations recorded yet today." else "No violations found in records.", 
                                 color = TextSecondary, 
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
@@ -314,7 +371,7 @@ fun HistoryScreen(
                     }
                 }
             } else {
-                items(state.violations) { violation ->
+                items(state.filteredViolations) { violation ->
                     ViolationCard(
                         violation = violation,
                         onClick = { onNavigateToDetails(violation.violationId) }
@@ -336,7 +393,7 @@ fun HistoryScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "END OF TODAY'S LOGS", 
+                            if (state.currentFilter == HistoryFilter.TODAY) "END OF TODAY'S LOGS" else "END OF ALL LOGS", 
                             fontSize = 11.sp, 
                             color = TextSecondary.copy(alpha = 0.4f), 
                             letterSpacing = 1.5.sp, 
@@ -397,7 +454,7 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
                         letterSpacing = (-0.2).sp
                     )
                     Text(
-                        text = "Institutional ID: ${violation.studentId}",
+                        text = "ID: ${violation.studentId} • ${violation.violationDate}",
                         fontSize = 11.sp,
                         color = TextSecondary,
                         fontWeight = FontWeight.Medium
@@ -408,9 +465,9 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
                 ViolationCategoryChip(category = violation.violationCategory)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Info Row (Similar to the reference grid)
+            // Info Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -420,18 +477,25 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("OFFENSE TYPE", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
-                    Text(violation.violationType, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = PurplePrimary, maxLines = 1)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("COLLEGE : COURSE", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
+                    Text(
+                        text = "${violation.studentCollege ?: "N/A"} : ${violation.studentCourse ?: "N/A"}",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PurplePrimary,
+                        maxLines = 1
+                    )
                 }
                 
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("RECORDED AT", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.AccessTime, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(12.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(violation.violationTime, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                    }
+                    Text("STATUS", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
+                    Text(
+                        violation.status, 
+                        fontSize = 12.sp, 
+                        fontWeight = FontWeight.Bold, 
+                        color = if (violation.status == "PENDING") GoldAccent else SuccessGreen
+                    )
                 }
             }
 

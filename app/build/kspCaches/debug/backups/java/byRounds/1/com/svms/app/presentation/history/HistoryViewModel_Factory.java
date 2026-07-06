@@ -1,5 +1,6 @@
 package com.svms.app.presentation.history;
 
+import com.svms.app.data.repository.AuthRepository;
 import com.svms.app.data.repository.ViolationRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -25,21 +26,27 @@ import javax.inject.Provider;
 public final class HistoryViewModel_Factory implements Factory<HistoryViewModel> {
   private final Provider<ViolationRepository> violationRepositoryProvider;
 
-  public HistoryViewModel_Factory(Provider<ViolationRepository> violationRepositoryProvider) {
+  private final Provider<AuthRepository> authRepositoryProvider;
+
+  public HistoryViewModel_Factory(Provider<ViolationRepository> violationRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
     this.violationRepositoryProvider = violationRepositoryProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
   }
 
   @Override
   public HistoryViewModel get() {
-    return newInstance(violationRepositoryProvider.get());
+    return newInstance(violationRepositoryProvider.get(), authRepositoryProvider.get());
   }
 
   public static HistoryViewModel_Factory create(
-      Provider<ViolationRepository> violationRepositoryProvider) {
-    return new HistoryViewModel_Factory(violationRepositoryProvider);
+      Provider<ViolationRepository> violationRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    return new HistoryViewModel_Factory(violationRepositoryProvider, authRepositoryProvider);
   }
 
-  public static HistoryViewModel newInstance(ViolationRepository violationRepository) {
-    return new HistoryViewModel(violationRepository);
+  public static HistoryViewModel newInstance(ViolationRepository violationRepository,
+      AuthRepository authRepository) {
+    return new HistoryViewModel(violationRepository, authRepository);
   }
 }
