@@ -103,15 +103,36 @@ fun AddViolationScreen(
             onDismissRequest = {},
             icon = {
                 Box(
-                    modifier = Modifier.size(56.dp).clip(RoundedCornerShape(50))
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
                         .background(Color(0xFFE8F5E9)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SuccessGreen, modifier = Modifier.size(36.dp))
+                    Icon(
+                        Icons.Default.CheckCircle, 
+                        contentDescription = null, 
+                        tint = SuccessGreen, 
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
             },
-            title = { Text("Violation Recorded", fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text("The violation has been successfully recorded in the system.", color = TextSecondary) },
+            title = { 
+                Text(
+                    "Violation Recorded", 
+                    fontWeight = FontWeight.Bold, 
+                    color = TextPrimary,
+                    fontSize = 18.sp
+                ) 
+            },
+            text = { 
+                Text(
+                    "The disciplinary incident has been successfully logged in the institutional database.", 
+                    color = TextSecondary,
+                    lineHeight = 20.sp,
+                    fontSize = 13.sp
+                ) 
+            },
             confirmButton = {
                 Button(
                     onClick = {
@@ -120,17 +141,25 @@ fun AddViolationScreen(
                         scannerViewModel.resetNavigation()
                         onNavigateToHistory()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
-                ) { Text("View History") }
+                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                    shape = RoundedCornerShape(18.dp)
+                ) { 
+                    Text("View History", fontWeight = FontWeight.Bold, fontSize = 13.sp) 
+                }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    showSuccessDialog = false
-                    violationViewModel.resetSuccess()
-                    scannerViewModel.resetNavigation()
-                }) { Text("Add Another", color = PurplePrimary) }
+                TextButton(
+                    onClick = {
+                        showSuccessDialog = false
+                        violationViewModel.resetSuccess()
+                        scannerViewModel.resetNavigation()
+                    }
+                ) { 
+                    Text("Add Another", color = PurplePrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp) 
+                }
             },
-            containerColor = CardWhite
+            containerColor = CardWhite,
+            shape = RoundedCornerShape(24.dp)
         )
     }
 
@@ -139,23 +168,32 @@ fun AddViolationScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Add Violation", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 18.sp)
+                    Text(
+                        "Add Incident Report", 
+                        fontWeight = FontWeight.Bold, 
+                        color = Color.White, 
+                        fontSize = 19.sp,
+                        letterSpacing = (-0.3).sp
+                    )
                 },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White)
+                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White, modifier = Modifier.size(26.dp))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = CardWhite) {
+            NavigationBar(
+                containerColor = CardWhite,
+                tonalElevation = 8.dp
+            ) {
                 NavigationBarItem(
                     selected = true,
                     onClick = {},
-                    icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan") },
-                    label = { Text("Scan") },
+                    icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan", modifier = Modifier.size(24.dp)) },
+                    label = { Text("Scan", fontWeight = FontWeight.Bold, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = PurplePrimary,
                         selectedTextColor = PurplePrimary,
@@ -165,8 +203,8 @@ fun AddViolationScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onNavigateToHistory,
-                    icon = { Icon(Icons.Default.History, contentDescription = "History") },
-                    label = { Text("History") },
+                    icon = { Icon(Icons.Default.History, contentDescription = "History", modifier = Modifier.size(24.dp)) },
+                    label = { Text("History", fontWeight = FontWeight.Medium, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         unselectedIconColor = TextSecondary,
                         unselectedTextColor = TextSecondary
@@ -176,340 +214,480 @@ fun AddViolationScreen(
         },
         containerColor = BackgroundGray
     ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+
+            // STUDENT IDENTIFICATION SECTION
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = CardWhite),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    SectionLabel("STUDENT IDENTIFICATION")
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        "Identify the student involved in the incident.",
+                        fontSize = 12.sp, color = TextSecondary
+                    )
 
-                // STUDENT IDENTIFICATION SECTION
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardWhite),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        SectionLabel("STUDENT IDENTIFICATION")
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            "Identify the student involved in the incident.",
-                            fontSize = 12.sp, color = TextSecondary
-                        )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Show identified student or scan button
-                        if (scannerState.scannedStudent != null) {
-                            val student = scannerState.scannedStudent!!
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(PurpleContainer)
-                                    .padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(RoundedCornerShape(50))
-                                        .background(PurplePrimary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        student.firstName.take(1) + student.lastName.take(1),
-                                        color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(student.fullName, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextPrimary)
-                                    Text("${student.schoolId} • ${student.course} • ${student.yearLevel}", fontSize = 12.sp, color = TextSecondary)
-                                }
-                                IconButton(onClick = { scannerViewModel.resetNavigation() }) {
-                                    Icon(Icons.Default.Close, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(18.dp))
-                                }
-                            }
-                        } else {
-                            SVMSButton(
-                                text = "Scan Student ID",
-                                onClick = {
-                                    if (cameraPermission.status.isGranted) {
-                                        showScanner = true
-                                    } else {
-                                        cameraPermission.launchPermissionRequest()
-                                    }
-                                },
-                                icon = Icons.Default.QrCodeScanner
-                            )
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            // Manual entry
-                            OutlinedTextField(
-                                value = scannerState.searchQuery,
-                                onValueChange = scannerViewModel::onSearchQueryChange,
-                                placeholder = { Text("Enter Student Name or ID Number", color = TextSecondary, fontSize = 13.sp) },
-                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = PurplePrimary) },
-                                trailingIcon = {
-                                    if (scannerState.searchQuery.isNotBlank()) {
-                                        IconButton(onClick = scannerViewModel::onManualSearch) {
-                                            Icon(Icons.Default.ArrowForward, contentDescription = null, tint = PurplePrimary)
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
-                                shape = RoundedCornerShape(10.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PurplePrimary,
-                                    unfocusedBorderColor = BorderColor,
-                                    focusedTextColor = TextPrimary,
-                                    unfocusedTextColor = TextPrimary,
-                                    focusedContainerColor = CardWhite,
-                                    unfocusedContainerColor = CardWhite
-                                )
-                            )
-
-                            // Search results dropdown
-                            if (scannerState.searchResults.isNotEmpty()) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                                    shape = RoundedCornerShape(10.dp),
-                                    elevation = CardDefaults.cardElevation(4.dp)
-                                ) {
-                                    Column {
-                                        scannerState.searchResults.take(4).forEach { student ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable { scannerViewModel.onStudentSelected(student) }
-                                                    .padding(12.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Icon(Icons.Default.Person, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(20.dp))
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                Column {
-                                                    Text(student.fullName, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
-                                                    Text("${student.schoolId} • ${student.course}", fontSize = 12.sp, color = TextSecondary)
-                                                }
-                                            }
-                                            if (student != scannerState.searchResults.last()) HorizontalDivider(color = BorderColor)
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (scannerState.error != null) {
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // SELECT OFFENSES SECTION
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardWhite),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        SectionLabel("SELECT OFFENSES")
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        // Minor Offenses
-                        ViolationCategoryHeader(
-                            title = "Minor Offenses",
-                            icon = Icons.Default.Info,
-                            color = MinorOrange,
-                            isExpanded = minorExpanded,
-                            onClick = {
-                                minorExpanded = !minorExpanded
-                                if (minorExpanded) majorExpanded = false
-                            }
-                        )
-                        AnimatedVisibility(visible = minorExpanded, enter = expandVertically(), exit = shrinkVertically()) {
-                            Column(modifier = Modifier.padding(top = 6.dp)) {
-                                violationState.minorViolations.forEach { violation ->
-                                    ViolationOptionRow(
-                                        violation = violation,
-                                        isSelected = selectedViolation == violation,
-                                        onSelect = {
-                                            selectedViolation = it
-                                            minorExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Major Offenses
-                        ViolationCategoryHeader(
-                            title = "Major Offenses",
-                            icon = Icons.Default.Warning,
-                            color = MajorRed,
-                            isExpanded = majorExpanded,
-                            onClick = {
-                                majorExpanded = !majorExpanded
-                                if (majorExpanded) minorExpanded = false
-                            }
-                        )
-                        AnimatedVisibility(visible = majorExpanded, enter = expandVertically(), exit = shrinkVertically()) {
-                            Column(modifier = Modifier.padding(top = 6.dp)) {
-                                violationState.majorViolations.forEach { violation ->
-                                    ViolationOptionRow(
-                                        violation = violation,
-                                        isSelected = selectedViolation == violation,
-                                        onSelect = {
-                                            selectedViolation = it
-                                            majorExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // DOCUMENTATION SECTION
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardWhite),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        SectionLabel("DOCUMENTATION")
-                        Text("Attach evidence and provide additional context.", fontSize = 12.sp, color = TextSecondary)
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Photo evidence button
-                        Box(
+                    // Show identified student or scan button
+                    if (scannerState.scannedStudent != null) {
+                        val student = scannerState.scannedStudent!!
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(160.dp)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(18.dp))
                                 .background(PurpleContainer.copy(alpha = 0.5f))
-                                .border(2.dp, PurplePrimary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                                .clickable { photoPickerLauncher.launch("image/*") },
-                            contentAlignment = Alignment.Center
+                                .border(1.dp, PurplePrimary.copy(alpha = 0.15f), RoundedCornerShape(18.dp))
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (violationState.isUploadingImage) {
-                                CircularProgressIndicator(color = PurplePrimary)
-                            } else if (violationState.evidenceImageUrl != null) {
-                                AsyncImage(
-                                    model = violationState.evidenceImageUrl,
-                                    contentDescription = "Evidence",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(PurplePrimary),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    student.firstName.take(1) + student.lastName.take(1),
+                                    color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp
                                 )
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(8.dp)
-                                        .size(32.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Black.copy(alpha = 0.6f))
-                                        .clickable { violationViewModel.removeEvidenceImage() },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.White, modifier = Modifier.size(16.dp))
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    student.fullName, 
+                                    fontWeight = FontWeight.Bold, 
+                                    fontSize = 15.sp, 
+                                    color = TextPrimary
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    "${student.schoolId} • ${student.course} • Yr ${student.yearLevel}", 
+                                    fontSize = 12.sp, 
+                                    color = TextSecondary
+                                )
+                            }
+                            IconButton(
+                                onClick = { scannerViewModel.resetNavigation() },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.8f))
+                            ) {
+                                Icon(
+                                    Icons.Default.Close, 
+                                    contentDescription = "Remove student", 
+                                    tint = TextSecondary, 
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        SVMSButton(
+                            text = "Scan Student ID Card",
+                            onClick = {
+                                if (cameraPermission.status.isGranted) {
+                                    showScanner = true
+                                } else {
+                                    cameraPermission.launchPermissionRequest()
                                 }
-                            } else {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(28.dp))
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text("Attach Photo Evidence", color = PurplePrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                            },
+                            icon = Icons.Default.QrCodeScanner
+                        )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Divider or manual entry indicator
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.5f))
+                            Text(
+                                "OR ENTER MANUALLY", 
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                fontSize = 10.sp, 
+                                color = TextSecondary, 
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            )
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = BorderColor.copy(alpha = 0.5f))
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Manual entry
+                        OutlinedTextField(
+                            value = scannerState.searchQuery,
+                            onValueChange = scannerViewModel::onSearchQueryChange,
+                            placeholder = { Text("Search by name or student ID...", color = TextSecondary.copy(alpha = 0.8f), fontSize = 13.sp) },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = PurplePrimary) },
+                            trailingIcon = {
+                                if (scannerState.searchQuery.isNotBlank()) {
+                                    IconButton(
+                                        onClick = { scannerViewModel.onManualSearch() },
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .clip(CircleShape)
+                                            .background(PurpleContainer)
+                                    ) {
+                                        Icon(Icons.Default.ArrowForward, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(16.dp))
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PurplePrimary,
+                                unfocusedBorderColor = BorderColor,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                focusedContainerColor = BackgroundGray.copy(alpha = 0.3f),
+                                unfocusedContainerColor = BackgroundGray.copy(alpha = 0.3f)
+                            )
+                        )
+
+                        // Search results dropdown
+                        if (scannerState.searchResults.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, BorderColor),
+                                colors = CardDefaults.cardColors(containerColor = CardWhite),
+                                elevation = CardDefaults.cardElevation(4.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(4.dp)) {
+                                    scannerState.searchResults.take(4).forEach { student ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(12.dp))
+                                                .clickable { scannerViewModel.onStudentSelected(student) }
+                                                .padding(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(36.dp)
+                                                    .clip(CircleShape)
+                                                    .background(PurpleContainer),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(Icons.Default.Person, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(18.dp))
+                                            }
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Column {
+                                                Text(student.fullName, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = TextPrimary)
+                                                Text("${student.schoolId} • ${student.course}", fontSize = 12.sp, color = TextSecondary)
+                                            }
+                                        }
+                                        if (student != scannerState.searchResults.take(4).last()) {
+                                            HorizontalDivider(color = BorderColor.copy(alpha = 0.5f), modifier = Modifier.padding(horizontal = 8.dp))
+                                        }
+                                    }
                                 }
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        // Location field
-                        OutlinedTextField(
-                            value = location,
-                            onValueChange = { location = it },
-                            placeholder = { Text("Location (e.g. Room 301, Main Gate)", color = TextSecondary, fontSize = 13.sp) },
-                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = PurplePrimary) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PurplePrimary,
-                                unfocusedBorderColor = BorderColor,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary,
-                                focusedContainerColor = CardWhite,
-                                unfocusedContainerColor = CardWhite
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        // Remarks
-                        OutlinedTextField(
-                            value = remarks,
-                            onValueChange = { remarks = it },
-                            placeholder = { Text("Enter Additional Remarks...", color = TextSecondary, fontSize = 13.sp) },
-                            modifier = Modifier.fillMaxWidth().height(110.dp),
-                            maxLines = 5,
-                            shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PurplePrimary,
-                                unfocusedBorderColor = BorderColor,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary,
-                                focusedContainerColor = CardWhite,
-                                unfocusedContainerColor = CardWhite
-                            )
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Minimum 50 characters recommended", fontSize = 10.sp, color = TextSecondary)
-                            Text("${remarks.length}/50", fontSize = 10.sp, color = if (remarks.length >= 50) SuccessGreen else TextSecondary)
+                        if (scannerState.error != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Submit button
-                if (violationState.error != null) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-
-                SVMSButton(
-                    text = "Submit Violation",
-                    onClick = {
-                        violationViewModel.submitViolation(
-                            student = scannerState.scannedStudent,
-                            violationTypeItem = selectedViolation,
-                            remarks = remarks,
-                            location = location
-                        )
-                    },
-                    isLoading = violationState.isLoading,
-                    isPrimary = false,
-                    icon = Icons.Default.CloudUpload
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // SELECT OFFENSES SECTION
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = CardWhite),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    SectionLabel("SELECT COMPLIANCE OFFENSES")
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Minor Offenses
+                    ViolationCategoryHeader(
+                        title = "Minor Infractions",
+                        icon = Icons.Default.Info,
+                        color = MinorOrange,
+                        isExpanded = minorExpanded,
+                        onClick = {
+                            minorExpanded = !minorExpanded
+                            if (minorExpanded) majorExpanded = false
+                        }
+                    )
+                    AnimatedVisibility(visible = minorExpanded, enter = expandVertically(), exit = shrinkVertically()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(BackgroundGray.copy(alpha = 0.5f))
+                                .padding(8.dp)
+                        ) {
+                            violationState.minorViolations.forEach { violation ->
+                                ViolationOptionRow(
+                                    violation = violation,
+                                    isSelected = selectedViolation == violation,
+                                    onSelect = {
+                                        selectedViolation = it
+                                        minorExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Major Offenses
+                    ViolationCategoryHeader(
+                        title = "Major Infractions",
+                        icon = Icons.Default.Warning,
+                        color = MajorRed,
+                        isExpanded = majorExpanded,
+                        onClick = {
+                            majorExpanded = !majorExpanded
+                            if (majorExpanded) minorExpanded = false
+                        }
+                    )
+                    AnimatedVisibility(visible = majorExpanded, enter = expandVertically(), exit = shrinkVertically()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(BackgroundGray.copy(alpha = 0.5f))
+                                .padding(8.dp)
+                        ) {
+                            violationState.majorViolations.forEach { violation ->
+                                ViolationOptionRow(
+                                    violation = violation,
+                                    isSelected = selectedViolation == violation,
+                                    onSelect = {
+                                        selectedViolation = it
+                                        majorExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Display selected offense preview below if any selected
+                    selectedViolation?.let { selected ->
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (selected.category == ViolationCategory.MAJOR) MajorRed.copy(alpha = 0.08f) else MinorOrange.copy(alpha = 0.08f),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp, 
+                                if (selected.category == ViolationCategory.MAJOR) MajorRed.copy(alpha = 0.2f) else MinorOrange.copy(alpha = 0.2f)
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    if (selected.category == ViolationCategory.MAJOR) Icons.Default.Warning else Icons.Default.Info,
+                                    contentDescription = null,
+                                    tint = if (selected.category == ViolationCategory.MAJOR) MajorRed else MinorOrange,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "Selected Offense:", 
+                                        fontSize = 11.sp, 
+                                        color = if (selected.category == ViolationCategory.MAJOR) MajorRed else MinorOrange,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        selected.name,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = TextPrimary
+                                    )
+                                }
+                                IconButton(onClick = { selectedViolation = null }) {
+                                    Icon(
+                                        Icons.Default.Clear, 
+                                        contentDescription = "Clear offense", 
+                                        tint = TextSecondary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // DOCUMENTATION SECTION
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = CardWhite),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    SectionLabel("INCIDENT DOCUMENTATION")
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("Attach evidence and provide additional context.", fontSize = 12.sp, color = TextSecondary)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Photo evidence box
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(170.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(BackgroundGray.copy(alpha = 0.4f))
+                            .border(1.5.dp, BorderColor, RoundedCornerShape(18.dp))
+                            .clickable { photoPickerLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (violationState.isUploadingImage) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                CircularProgressIndicator(color = PurplePrimary, modifier = Modifier.size(36.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text("Uploading Image...", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                            }
+                        } else if (violationState.evidenceImageUrl != null) {
+                            AsyncImage(
+                                model = violationState.evidenceImageUrl,
+                                contentDescription = "Evidence Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                            // Remove image overlay button
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(12.dp)
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.6f))
+                                    .clickable { violationViewModel.removeEvidenceImage() },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = "Remove Photo", tint = Color.White, modifier = Modifier.size(16.dp))
+                            }
+                        } else {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(54.dp)
+                                        .clip(CircleShape)
+                                        .background(PurpleContainer),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(24.dp))
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text("Attach Photo Evidence", color = PurplePrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Tap to select image from gallery", color = TextSecondary, fontSize = 11.sp)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Location field
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { location = it },
+                        placeholder = { Text("Where did this happen? (e.g. Room 301, Main Gate)", color = TextSecondary.copy(alpha = 0.8f), fontSize = 13.sp) },
+                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = PurplePrimary) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PurplePrimary,
+                            unfocusedBorderColor = BorderColor,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedContainerColor = BackgroundGray.copy(alpha = 0.3f),
+                            unfocusedContainerColor = BackgroundGray.copy(alpha = 0.3f)
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Remarks
+                    OutlinedTextField(
+                        value = remarks,
+                        onValueChange = { remarks = it },
+                        placeholder = { Text("Write some additional details or incident notes...", color = TextSecondary.copy(alpha = 0.8f), fontSize = 13.sp) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp),
+                        maxLines = 5,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PurplePrimary,
+                            unfocusedBorderColor = BorderColor,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedContainerColor = BackgroundGray.copy(alpha = 0.3f),
+                            unfocusedContainerColor = BackgroundGray.copy(alpha = 0.3f)
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Include important details for fast review", fontSize = 10.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                        Text("${remarks.length}/50+", fontSize = 10.sp, color = if (remarks.length >= 50) SuccessGreen else TextSecondary, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Submit button
+            if (violationState.error != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            SVMSButton(
+                text = "Submit Violation Report",
+                onClick = {
+                    violationViewModel.submitViolation(
+                        student = scannerState.scannedStudent,
+                        violationTypeItem = selectedViolation,
+                        remarks = remarks,
+                        location = location
+                    )
+                },
+                isLoading = violationState.isLoading,
+                isPrimary = true,
+                icon = Icons.Default.CloudUpload
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
+    }
 }
 
 @Composable
@@ -523,19 +701,35 @@ fun ViolationCategoryHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .border(1.dp, if (isExpanded) color else BorderColor, RoundedCornerShape(16.dp))
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(color.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = title, 
+            fontWeight = FontWeight.Bold, 
+            fontSize = 14.sp, 
+            color = TextPrimary, 
+            modifier = Modifier.weight(1f)
+        )
         Icon(
             if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = null,
-            tint = TextSecondary
+            tint = TextSecondary,
+            modifier = Modifier.size(20.dp)
         )
     }
 }
@@ -549,10 +743,10 @@ fun ViolationOptionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (isSelected) PurpleContainer else Color.Transparent)
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isSelected) PurpleContainer.copy(alpha = 0.7f) else Color.Transparent)
             .clickable { onSelect(violation) }
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
@@ -562,10 +756,12 @@ fun ViolationOptionRow(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            violation.name,
+            text = violation.name,
             fontSize = 13.sp,
             color = if (isSelected) PurplePrimary else TextPrimary,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(vertical = 4.dp)
         )
     }
 }

@@ -60,23 +60,32 @@ fun HistoryScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("History", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 20.sp)
+                    Text(
+                        "Violation History", 
+                        fontWeight = FontWeight.Bold, 
+                        color = Color.White, 
+                        fontSize = 19.sp,
+                        letterSpacing = (-0.3).sp
+                    )
                 },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White)
+                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White, modifier = Modifier.size(26.dp))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = CardWhite) {
+            NavigationBar(
+                containerColor = CardWhite,
+                tonalElevation = 8.dp
+            ) {
                 NavigationBarItem(
                     selected = false,
                     onClick = onNavigateToScan,
-                    icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan") },
-                    label = { Text("Scan") },
+                    icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan", modifier = Modifier.size(24.dp)) },
+                    label = { Text("Scan", fontWeight = FontWeight.Medium, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         unselectedIconColor = TextSecondary,
                         unselectedTextColor = TextSecondary
@@ -85,8 +94,8 @@ fun HistoryScreen(
                 NavigationBarItem(
                     selected = true,
                     onClick = {},
-                    icon = { Icon(Icons.Default.History, contentDescription = "History") },
-                    label = { Text("History") },
+                    icon = { Icon(Icons.Default.History, contentDescription = "History", modifier = Modifier.size(24.dp)) },
+                    label = { Text("History", fontWeight = FontWeight.Bold, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = PurplePrimary,
                         selectedTextColor = PurplePrimary,
@@ -97,144 +106,209 @@ fun HistoryScreen(
         },
         containerColor = BackgroundGray
     ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                // Header
-                item {
-                    Column {
-                        Text(
-                            "Today's Reports",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = TextPrimary
-                        )
-                        Text(
-                            "Summary of disciplinary actions for $todayDate",
-                            fontSize = 12.sp,
-                            color = TextSecondary,
-                            modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
-                        )
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 16.dp)
+        ) {
+            // Header
+            item {
+                Column {
+                    Text(
+                        "Today's Reports",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TextPrimary,
+                        letterSpacing = (-0.5).sp
+                    )
+                    Text(
+                        "Summary of disciplinary actions for $todayDate",
+                        fontSize = 12.sp,
+                        color = TextSecondary,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 18.dp),
+                        fontWeight = FontWeight.Medium
+                    )
 
-                        // Stats row
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            // Total incidents
-                            Card(
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = CardDefaults.cardColors(containerColor = CardWhite),
-                                elevation = CardDefaults.cardElevation(2.dp)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    SectionLabel("TOTAL INCIDENTS")
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        state.totalIncidents.toString(),
-                                        fontSize = 36.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = TextPrimary
-                                    )
-                                }
-                            }
-
-                            // Pending review
-                            Card(
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = CardDefaults.cardColors(containerColor = PurplePrimary),
-                                elevation = CardDefaults.cardElevation(2.dp)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    SectionLabel("PENDING REVIEW")
-                                    // Override text color for dark bg
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        String.format("%02d", state.pendingReview),
-                                        fontSize = 36.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Recent Submissions header
-                item {
+                    // Stats row
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text("Recent Submissions", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(Color(0xFFE8F5E9))
-                                .padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        // Total incidents
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = CardWhite),
+                            elevation = CardDefaults.cardElevation(2.dp)
                         ) {
-                            Box(
-                                modifier = Modifier.size(6.dp).clip(RoundedCornerShape(50))
-                                    .background(SuccessGreen)
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text("LIVE FEED", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = SuccessGreen, letterSpacing = 0.5.sp)
-                        }
-                    }
-                }
-
-                if (state.isLoading) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 40.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = PurplePrimary)
-                        }
-                    }
-                } else if (state.violations.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 40.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CheckCircleOutline, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(48.dp))
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text("No violations recorded yet", color = TextSecondary, fontSize = 14.sp)
+                            Column(modifier = Modifier.padding(18.dp)) {
+                                SectionLabel("TOTAL INCIDENTS")
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    state.totalIncidents.toString(),
+                                    fontSize = 38.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = TextPrimary,
+                                    letterSpacing = (-1).sp
+                                )
                             }
                         }
-                    }
-                } else {
-                    items(state.violations) { violation ->
-                        ViolationCard(
-                            violation = violation,
-                            onClick = { onNavigateToDetails(violation.violationId) }
-                        )
-                    }
 
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        // Pending review
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = PurplePrimary),
+                            elevation = CardDefaults.cardElevation(4.dp)
                         ) {
-                            Icon(Icons.Default.CheckBox, contentDescription = null, tint = TextSecondary.copy(alpha = 0.5f), modifier = Modifier.size(28.dp))
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text("END OF TODAY'S LOGS", fontSize = 11.sp, color = TextSecondary.copy(alpha = 0.5f), letterSpacing = 1.sp, fontWeight = FontWeight.SemiBold)
+                            Column(modifier = Modifier.padding(18.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(3.dp)
+                                            .height(12.dp)
+                                            .clip(RoundedCornerShape(1.5.dp))
+                                            .background(GoldAccent)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "PENDING REVIEW",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = GoldAccent,
+                                        letterSpacing = 1.2.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    String.format("%02d", state.pendingReview),
+                                    fontSize = 38.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White,
+                                    letterSpacing = (-1).sp
+                                )
+                            }
                         }
                     }
                 }
             }
+
+            // Recent Submissions header
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp, bottom = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Recent Submissions", 
+                        fontSize = 16.sp, 
+                        fontWeight = FontWeight.Bold, 
+                        color = TextPrimary,
+                        letterSpacing = (-0.2).sp
+                    )
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color(0xFFE8F5E9))
+                            .border(1.dp, SuccessGreen.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(SuccessGreen)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "LIVE FEED", 
+                            fontSize = 10.sp, 
+                            fontWeight = FontWeight.Bold, 
+                            color = SuccessGreen, 
+                            letterSpacing = 0.8.sp
+                        )
+                    }
+                }
+            }
+
+            if (state.isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 60.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = PurplePrimary, modifier = Modifier.size(36.dp))
+                    }
+                }
+            } else if (state.violations.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 60.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.CheckCircleOutline, 
+                                contentDescription = null, 
+                                tint = TextSecondary.copy(alpha = 0.4f), 
+                                modifier = Modifier.size(54.dp)
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Text(
+                                "No violations recorded yet today.", 
+                                color = TextSecondary, 
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(state.violations) { violation ->
+                    ViolationCard(
+                        violation = violation,
+                        onClick = { onNavigateToDetails(violation.violationId) }
+                    )
+                }
+
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            Icons.Default.CheckBox, 
+                            contentDescription = null, 
+                            tint = TextSecondary.copy(alpha = 0.3f), 
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "END OF TODAY'S LOGS", 
+                            fontSize = 11.sp, 
+                            color = TextSecondary.copy(alpha = 0.4f), 
+                            letterSpacing = 1.5.sp, 
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
+    }
 }
 
 @Composable
@@ -242,12 +316,13 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+            .clickable { onClick() }
+            .border(1.dp, BorderColor.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = CardWhite),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp, pressedElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(18.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -257,36 +332,39 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
                     Text(
                         text = violation.studentName,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TextPrimary,
+                        letterSpacing = (-0.2).sp
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "ID: ${violation.studentId}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        color = TextSecondary,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 ViolationCategoryChip(category = violation.violationCategory)
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             
             Surface(
-                color = BackgroundGray,
-                shape = RoundedCornerShape(8.dp),
+                color = PurpleContainer.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = violation.violationType,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = PurpleDark
+                    fontWeight = FontWeight.Bold,
+                    color = PurpleDark,
+                    lineHeight = 18.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -298,32 +376,43 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
                         Icons.Default.AccessTime,
                         contentDescription = null,
                         tint = TextSecondary,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(15.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = violation.violationTime,
                         style = MaterialTheme.typography.labelMedium,
-                        color = TextSecondary
+                        color = TextSecondary,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 
-                Icon(
-                    Icons.Default.ChevronRight,
-                    contentDescription = null,
-                    tint = TextSecondary.copy(alpha = 0.5f)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(BackgroundGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = "Details",
+                        tint = PurplePrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
 
             if (violation.evidenceImageUrl != null) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 AsyncImage(
                     model = violation.evidenceImageUrl,
                     contentDescription = "Evidence Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
-                        .clip(RoundedCornerShape(12.dp)),
+                        .height(170.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, BorderColor.copy(alpha = 0.3f), RoundedCornerShape(16.dp)),
                     contentScale = ContentScale.Crop
                 )
             }

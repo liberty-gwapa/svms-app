@@ -18,6 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -49,7 +51,13 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Text("My Profile", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 20.sp) 
+                    Text(
+                        "Administrator Profile", 
+                        fontWeight = FontWeight.Bold, 
+                        color = Color.White, 
+                        fontSize = 19.sp,
+                        letterSpacing = (-0.3).sp
+                    ) 
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -69,67 +77,76 @@ fun ProfileScreen(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Image Section
+            // Profile Image Section with Gradient Backdrop
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(28.dp),
                 colors = CardDefaults.cardColors(containerColor = CardWhite),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
-                        modifier = Modifier.size(130.dp),
+                        modifier = Modifier.size(140.dp),
                         contentAlignment = Alignment.BottomEnd
                     ) {
-                        if (state.user?.profileImageUrl != null) {
-                            AsyncImage(
-                                model = state.user?.profileImageUrl,
-                                contentDescription = "Profile Picture",
-                                modifier = Modifier
-                                    .size(130.dp)
-                                    .clip(CircleShape)
-                                    .border(3.dp, PurplePrimary, CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .size(130.dp)
-                                    .clip(CircleShape)
-                                    .background(PurpleContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Person,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(70.dp),
-                                    tint = PurplePrimary
+                        Surface(
+                            modifier = Modifier
+                                .size(140.dp)
+                                .shadow(8.dp, CircleShape, spotColor = PurplePrimary.copy(alpha = 0.5f)),
+                            shape = CircleShape,
+                            color = CardWhite,
+                            border = androidx.compose.foundation.BorderStroke(4.dp, CardWhite)
+                        ) {
+                            if (state.user?.profileImageUrl != null) {
+                                AsyncImage(
+                                    model = state.user?.profileImageUrl,
+                                    contentDescription = "Profile Picture",
+                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                    contentScale = ContentScale.Crop
                                 )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(PurpleContainer.copy(alpha = 0.6f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Person,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(75.dp),
+                                        tint = PurplePrimary
+                                    )
+                                }
                             }
                         }
 
                         if (state.isUploading) {
                             Box(
                                 modifier = Modifier
-                                    .matchParentSize()
+                                    .size(140.dp)
                                     .clip(CircleShape)
                                     .background(Color.Black.copy(alpha = 0.4f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(32.dp))
+                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(36.dp), strokeWidth = 3.dp)
                             }
                         }
 
+                        // Edit Photo Button
                         IconButton(
                             onClick = { photoPickerLauncher.launch("image/*") },
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
                                 .background(GoldAccent)
-                                .border(2.dp, Color.White, CircleShape)
+                                .border(3.dp, Color.White, CircleShape)
+                                .shadow(4.dp, CircleShape)
                         ) {
                             Icon(
                                 Icons.Default.CameraAlt,
@@ -140,77 +157,87 @@ fun ProfileScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     state.user?.let { user ->
                         Text(
                             text = user.fullName,
-                            fontSize = 24.sp,
+                            fontSize = 26.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = TextPrimary,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            letterSpacing = (-0.5).sp
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = user.email,
                             fontSize = 14.sp,
                             color = TextSecondary,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Medium
                         )
                         
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         
                         Surface(
-                            color = PurplePrimary.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(20.dp)
+                            color = PurplePrimary.copy(alpha = 0.08f),
+                            shape = RoundedCornerShape(20.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, PurplePrimary.copy(alpha = 0.15f))
                         ) {
-                            Text(
-                                text = user.role.uppercase(),
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                                color = PurplePrimary,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
-                                letterSpacing = 0.5.sp
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(PurplePrimary))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = user.role.uppercase(),
+                                    color = PurplePrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp,
+                                    letterSpacing = 1.2.sp
+                                )
+                            }
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Details Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(28.dp),
                 colors = CardDefaults.cardColors(containerColor = CardWhite),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    SectionLabel("ACCOUNT DETAILS")
-                    Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.padding(24.dp)) {
+                    SectionLabel("ACCOUNT IDENTIFICATION")
+                    Spacer(modifier = Modifier.height(20.dp))
                     
                     state.user?.let { user ->
-                        InfoRow(
+                        ProfileInfoRow(
                             icon = Icons.Default.Badge,
-                            label = "User ID",
-                            value = user.userId.take(8).uppercase()
+                            label = "System User ID",
+                            value = user.userId.take(12).uppercase()
                         )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
-                        InfoRow(
-                            icon = Icons.Default.Person,
-                            label = "Username",
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                        ProfileInfoRow(
+                            icon = Icons.Default.AccountCircle,
+                            label = "Portal Username",
                             value = user.username
                         )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
-                        InfoRow(
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                        ProfileInfoRow(
                             icon = Icons.Default.Phone,
-                            label = "Contact",
-                            value = user.contactNumber ?: "Not set"
+                            label = "Primary Contact",
+                            value = user.contactNumber ?: "Not Configured"
                         )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
-                        InfoRow(
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                        ProfileInfoRow(
                             icon = Icons.Default.CalendarToday,
-                            label = "Joined",
+                            label = "Access Granted Since",
                             value = user.createdAt.split("T").firstOrNull() ?: "N/A"
                         )
                     }
@@ -222,20 +249,21 @@ fun ProfileScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .background(Color(0xFFFFEBEE))
-                        .padding(12.dp),
+                        .border(1.dp, ErrorRed.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+                        .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = ErrorRed, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(state.error!!, color = ErrorRed, fontSize = 13.sp)
+                    Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = ErrorRed, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(state.error!!, color = ErrorRed, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Logout Button
+            // Premium Logout Button
             Button(
                 onClick = {
                     viewModel.logout()
@@ -243,30 +271,32 @@ fun ProfileScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(60.dp)
+                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(30.dp), spotColor = ErrorRed.copy(alpha = 0.4f)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE53935), // Material Red 600
+                    containerColor = ErrorRed,
                     contentColor = Color.White
                 ),
-                shape = RoundedCornerShape(16.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                shape = RoundedCornerShape(30.dp)
             ) {
                 Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(14.dp))
                 Text(
                     "LOG OUT FROM SYSTEM",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    letterSpacing = 0.5.sp
+                    fontSize = 14.sp,
+                    letterSpacing = 1.sp
                 )
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                "Version 1.0.0 • SVMS Institutional Portal",
+                "Version 1.2.4-stable • SVMS Institutional Portal\n© 2024 Institutional Compliance Office",
                 fontSize = 11.sp,
-                color = TextSecondary.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
+                color = TextSecondary.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                lineHeight = 16.sp,
+                fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -274,7 +304,7 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun InfoRow(
+private fun ProfileInfoRow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     value: String
@@ -283,16 +313,24 @@ private fun InfoRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = PurplePrimary,
-            modifier = Modifier.size(20.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(PurpleContainer.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = PurplePrimary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(label, fontSize = 12.sp, color = TextSecondary)
-            Text(value, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(label, fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
+            Text(value, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = TextPrimary)
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.svms.app.presentation.violation.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -44,7 +47,13 @@ fun ViolationDetailsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Report Details", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 20.sp)
+                    Text(
+                        "Incident Report Details", 
+                        fontWeight = FontWeight.Bold, 
+                        color = Color.White, 
+                        fontSize = 19.sp,
+                        letterSpacing = (-0.3).sp
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -64,7 +73,8 @@ fun ViolationDetailsScreen(
             if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = PurplePrimary
+                    color = PurplePrimary,
+                    strokeWidth = 3.dp
                 )
             } else if (state.error != null) {
                 // Error handled via Snackbar
@@ -84,12 +94,12 @@ private fun ViolationDetailsContent(violation: Violation) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         // Status and Basic Info Header
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = CardWhite),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
@@ -103,26 +113,48 @@ private fun ViolationDetailsContent(violation: Violation) {
                     StatusChip(status = violation.status)
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
                 
                 Text(
                     text = violation.violationType,
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextPrimary,
-                    lineHeight = 28.sp
+                    lineHeight = 30.sp,
+                    letterSpacing = (-0.5).sp
                 )
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Event, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(violation.violationDate, fontSize = 14.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Icon(Icons.Default.AccessTime, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(violation.violationTime, fontSize = 14.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(BackgroundGray.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Event, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(violation.violationDate, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Bold)
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(BackgroundGray.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.AccessTime, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(violation.violationTime, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
@@ -130,30 +162,30 @@ private fun ViolationDetailsContent(violation: Violation) {
         // Student Details Section
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = CardWhite),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 SectionLabel("STUDENT INFORMATION")
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
-                InfoRowWithIcon(icon = Icons.Default.Person, label = "Student Name", value = violation.studentName)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
-                InfoRowWithIcon(icon = Icons.Default.Badge, label = "Institutional ID", value = violation.studentId.toString())
+                InfoRowWithIcon(icon = Icons.Default.Person, label = "Student Full Name", value = violation.studentName)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                InfoRowWithIcon(icon = Icons.Default.Badge, label = "Institutional Identification", value = violation.studentId.toString())
             }
         }
 
         // Incident Documentation Section
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = CardWhite),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 SectionLabel("INCIDENT DOCUMENTATION")
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
                 
                 if (violation.evidenceImageUrl != null) {
                     AsyncImage(
@@ -161,34 +193,50 @@ private fun ViolationDetailsContent(violation: Violation) {
                         contentDescription = "Evidence Photo",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(220.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(BackgroundGray),
+                            .height(240.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(BackgroundGray)
+                            .border(1.dp, BorderColor.copy(alpha = 0.3f), RoundedCornerShape(18.dp)),
                         contentScale = ContentScale.Crop
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
                 }
                 
                 val location = violation.description?.substringBefore("\n")?.removePrefix("Location: ") ?: "Not specified"
                 val remarks = violation.description?.substringAfter("\n") ?: violation.description ?: "No remarks provided."
 
-                InfoRowWithIcon(icon = Icons.Default.LocationOn, label = "Incident Location", value = location)
+                InfoRowWithIcon(icon = Icons.Default.LocationOn, label = "Incident Primary Location", value = location)
                 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
                 
-                Row {
-                    Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(12.dp))
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(PurpleContainer.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(18.dp))
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("Additional Remarks", fontSize = 12.sp, color = TextSecondary)
+                        Text("Administrator Remarks", fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = remarks,
-                            fontSize = 15.sp,
-                            color = TextPrimary,
-                            lineHeight = 22.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = BackgroundGray.copy(alpha = 0.3f)
+                        ) {
+                            Text(
+                                text = remarks,
+                                fontSize = 14.sp,
+                                color = TextPrimary,
+                                lineHeight = 22.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -197,58 +245,68 @@ private fun ViolationDetailsContent(violation: Violation) {
         // Audit Trail Section
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = CardWhite),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                SectionLabel("ADMINISTRATIVE DETAILS")
-                Spacer(modifier = Modifier.height(16.dp))
+                SectionLabel("ADMINISTRATIVE AUDIT TRAIL")
+                Spacer(modifier = Modifier.height(18.dp))
                 
-                InfoRowWithIcon(icon = Icons.Default.Security, label = "Reporting Officer", value = violation.guardName)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
+                InfoRowWithIcon(icon = Icons.Default.Security, label = "Reporting Security Officer", value = violation.guardName)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ConfirmationNumber, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(PurpleContainer.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.ConfirmationNumber, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(18.dp))
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text("System Report UUID", fontSize = 12.sp, color = TextSecondary)
+                        Text("System Report UUID", fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                         Text(
                             text = violation.violationId.uppercase(),
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = TextSecondary,
+                            fontWeight = FontWeight.Bold,
+                            color = PurplePrimary,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                         )
                     }
                 }
                 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderColor.copy(alpha = 0.5f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
                 
                 // Static indicator for read-only
                 Surface(
-                    color = BackgroundGray,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    color = Color(0xFFE3F2FD),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBBDEFB))
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = TextSecondary.copy(alpha = 0.6f), modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF1976D2), modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            "This report is verified and locked for compliance.",
-                            fontSize = 11.sp,
-                            color = TextSecondary.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium
+                            "This report is digitally verified and archived for compliance monitoring.",
+                            fontSize = 12.sp,
+                            color = Color(0xFF1565C0),
+                            fontWeight = FontWeight.Bold,
+                            lineHeight = 16.sp
                         )
                     }
                 }
             }
         }
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -262,26 +320,27 @@ private fun StatusChip(status: String) {
     }
     
     Surface(
-        color = color.copy(alpha = 0.12f),
-        shape = RoundedCornerShape(8.dp),
+        color = color.copy(alpha = 0.08f),
+        shape = RoundedCornerShape(20.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.15f))
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(6.dp)
-                    .clip(RoundedCornerShape(50))
+                    .clip(CircleShape)
                     .background(color)
             )
-            Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = status,
                 color = color,
-                fontWeight = FontWeight.ExtraBold,
+                fontWeight = FontWeight.Bold,
                 fontSize = 11.sp,
-                letterSpacing = 0.5.sp
+                letterSpacing = 1.2.sp
             )
         }
     }
@@ -290,11 +349,19 @@ private fun StatusChip(status: String) {
 @Composable
 private fun InfoRowWithIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, value: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(12.dp))
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(PurpleContainer.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(18.dp))
+        }
+        Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(label, fontSize = 12.sp, color = TextSecondary)
-            Text(value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(label, fontSize = 11.sp, color = TextSecondary, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
+            Text(value, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = TextPrimary)
         }
     }
 }
