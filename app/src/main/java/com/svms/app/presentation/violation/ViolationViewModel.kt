@@ -25,7 +25,8 @@ data class ViolationUiState(
     val minorViolations: List<ViolationTypeItem> = emptyList(),
     val majorViolations: List<ViolationTypeItem> = emptyList(),
     val evidenceImageUrl: String? = null,
-    val isUploadingImage: Boolean = false
+    val isUploadingImage: Boolean = false,
+    val currentUser: User? = null
 )
 
 @HiltViewModel
@@ -40,6 +41,15 @@ class ViolationViewModel @Inject constructor(
 
     init {
         fetchViolationTypes()
+        observeCurrentUser()
+    }
+
+    private fun observeCurrentUser() {
+        viewModelScope.launch {
+            authRepository.currentUser.collect { user ->
+                _uiState.value = _uiState.value.copy(currentUser = user)
+            }
+        }
     }
 
     private fun fetchViolationTypes() {

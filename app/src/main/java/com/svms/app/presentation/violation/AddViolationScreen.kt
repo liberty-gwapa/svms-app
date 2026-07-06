@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -169,25 +170,57 @@ fun AddViolationScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Add Incident Report", 
+                        "Add Violation", 
                         fontWeight = FontWeight.Bold, 
                         color = Color.White, 
-                        fontSize = 19.sp,
+                        fontSize = 18.sp,
                         letterSpacing = (-0.3).sp
                     )
                 },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White, modifier = Modifier.size(26.dp))
+                        if (violationState.currentUser?.profileImageUrl != null) {
+                            AsyncImage(
+                                model = violationState.currentUser?.profileImageUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clip(CircleShape)
+                                    .border(1.5.dp, Color.White.copy(alpha = 0.5f), CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = violationState.currentUser?.firstName?.take(1) ?: "A",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PurplePrimary,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                modifier = Modifier.shadow(4.dp)
             )
         },
         bottomBar = {
             NavigationBar(
-                containerColor = CardWhite,
-                tonalElevation = 8.dp
+                containerColor = PurplePrimary,
+                tonalElevation = 8.dp,
+                modifier = Modifier.shadow(8.dp)
             ) {
                 NavigationBarItem(
                     selected = true,
@@ -195,9 +228,11 @@ fun AddViolationScreen(
                     icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan", modifier = Modifier.size(24.dp)) },
                     label = { Text("Scan", fontWeight = FontWeight.Bold, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = PurplePrimary,
-                        selectedTextColor = PurplePrimary,
-                        indicatorColor = PurpleContainer
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                        unselectedTextColor = Color.White.copy(alpha = 0.6f),
+                        indicatorColor = PurpleLight
                     )
                 )
                 NavigationBarItem(
@@ -206,8 +241,11 @@ fun AddViolationScreen(
                     icon = { Icon(Icons.Default.History, contentDescription = "History", modifier = Modifier.size(24.dp)) },
                     label = { Text("History", fontWeight = FontWeight.Medium, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
-                        unselectedIconColor = TextSecondary,
-                        unselectedTextColor = TextSecondary
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                        unselectedTextColor = Color.White.copy(alpha = 0.6f),
+                        indicatorColor = PurpleLight
                     )
                 )
             }
@@ -418,12 +456,12 @@ fun AddViolationScreen(
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
-                    SectionLabel("SELECT COMPLIANCE OFFENSES")
+                    SectionLabel("SELECT OFFENSES")
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // Minor Offenses
                     ViolationCategoryHeader(
-                        title = "Minor Infractions",
+                        title = "Minor Offenses",
                         icon = Icons.Default.Info,
                         color = MinorOrange,
                         isExpanded = minorExpanded,
@@ -457,7 +495,7 @@ fun AddViolationScreen(
 
                     // Major Offenses
                     ViolationCategoryHeader(
-                        title = "Major Infractions",
+                        title = "Major Offenses",
                         icon = Icons.Default.Warning,
                         color = MajorRed,
                         isExpanded = majorExpanded,
@@ -548,7 +586,7 @@ fun AddViolationScreen(
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
-                    SectionLabel("INCIDENT DOCUMENTATION")
+                    SectionLabel("DOCUMENTATION")
                     Spacer(modifier = Modifier.height(6.dp))
                     Text("Attach evidence and provide additional context.", fontSize = 12.sp, color = TextSecondary)
 
@@ -721,7 +759,7 @@ fun ViolationCategoryHeader(
         Text(
             text = title, 
             fontWeight = FontWeight.Bold, 
-            fontSize = 14.sp, 
+            fontSize = 13.sp, 
             color = TextPrimary, 
             modifier = Modifier.weight(1f)
         )
@@ -757,7 +795,7 @@ fun ViolationOptionRow(
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = violation.name,
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             color = if (isSelected) PurplePrimary else TextPrimary,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
             lineHeight = 18.sp,

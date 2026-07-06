@@ -64,7 +64,13 @@ fun ProfileScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PurplePrimary,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                modifier = Modifier.shadow(4.dp)
             )
         },
         containerColor = BackgroundGray

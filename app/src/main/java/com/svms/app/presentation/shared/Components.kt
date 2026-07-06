@@ -49,7 +49,7 @@ fun ViolationCategoryChip(category: ViolationCategory, modifier: Modifier = Modi
                 color = color,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp
+                letterSpacing = 0.5.sp
             )
         }
     }
@@ -137,9 +137,9 @@ fun SVMSButton(
                     }
                     Text(
                         text = text.uppercase(),
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.2.sp,
+                        letterSpacing = 0.8.sp,
                         color = if (enabled) Color.White else Color(0xFF8E8E93)
                     )
                 }
@@ -164,10 +164,10 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            fontSize = 11.sp,
+            fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
             color = PurplePrimary,
-            letterSpacing = 1.5.sp
+            letterSpacing = 0.8.sp
         )
     }
 }

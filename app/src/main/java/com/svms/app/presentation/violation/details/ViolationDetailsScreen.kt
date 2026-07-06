@@ -48,10 +48,10 @@ fun ViolationDetailsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Incident Report Details", 
+                        "Report Details", 
                         fontWeight = FontWeight.Bold, 
                         color = Color.White, 
-                        fontSize = 19.sp,
+                        fontSize = 18.sp,
                         letterSpacing = (-0.3).sp
                     )
                 },
@@ -60,7 +60,13 @@ fun ViolationDetailsScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PurplePrimary,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                modifier = Modifier.shadow(4.dp)
             )
         },
         containerColor = BackgroundGray
@@ -117,10 +123,10 @@ private fun ViolationDetailsContent(violation: Violation) {
                 
                 Text(
                     text = violation.violationType,
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextPrimary,
-                    lineHeight = 30.sp,
+                    lineHeight = 28.sp,
                     letterSpacing = (-0.5).sp
                 )
                 
@@ -172,6 +178,10 @@ private fun ViolationDetailsContent(violation: Violation) {
                 
                 InfoRowWithIcon(icon = Icons.Default.Person, label = "Student Full Name", value = violation.studentName)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                InfoRowWithIcon(icon = Icons.Default.School, label = "College / Department", value = violation.studentCollege ?: "Not Specified")
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
+                InfoRowWithIcon(icon = Icons.Default.Book, label = "Course & Program", value = violation.studentCourse ?: "Not Specified")
+                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = BorderColor.copy(alpha = 0.4f))
                 InfoRowWithIcon(icon = Icons.Default.Badge, label = "Institutional Identification", value = violation.studentId.toString())
             }
         }
@@ -184,7 +194,7 @@ private fun ViolationDetailsContent(violation: Violation) {
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                SectionLabel("INCIDENT DOCUMENTATION")
+                SectionLabel("DOCUMENTATION")
                 Spacer(modifier = Modifier.height(18.dp))
                 
                 if (violation.evidenceImageUrl != null) {
@@ -250,7 +260,7 @@ private fun ViolationDetailsContent(violation: Violation) {
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                SectionLabel("ADMINISTRATIVE AUDIT TRAIL")
+                SectionLabel("AUDIT TRAIL")
                 Spacer(modifier = Modifier.height(18.dp))
                 
                 InfoRowWithIcon(icon = Icons.Default.Security, label = "Reporting Security Officer", value = violation.guardName)

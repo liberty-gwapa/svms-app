@@ -2,7 +2,9 @@ package com.svms.app.presentation.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.svms.app.data.model.User
 import com.svms.app.data.model.Violation
+import com.svms.app.data.repository.AuthRepository
 import com.svms.app.data.repository.ViolationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -14,12 +16,14 @@ data class HistoryUiState(
     val totalIncidents: Int = 0,
     val pendingReview: Int = 0,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val currentUser: User? = null
 )
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val violationRepository: ViolationRepository
+    private val violationRepository: ViolationRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -37,7 +41,16 @@ class HistoryViewModel @Inject constructor(
             }
         }
         
+        observeCurrentUser()
         refreshHistory()
+    }
+
+    private fun observeCurrentUser() {
+        viewModelScope.launch {
+            authRepository.currentUser.collect { user ->
+                _uiState.value = _uiState.value.copy(currentUser = user)
+            }
+        }
     }
 
     fun refreshHistory() {

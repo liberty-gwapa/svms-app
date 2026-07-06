@@ -54,14 +54,31 @@ class AuthRepository @Inject constructor(
             
             if (session != null) {
                 val email = session.user?.email
+                val authId = session.user?.id
                 if (email != null) {
                     Log.d("SVMS_AUTH", "AuthRepository: Verifying profile for $email")
-                    val user = supabaseClient.postgrest["users"]
+                    var user = supabaseClient.postgrest["users"]
                         .select { filter { eq("email", email) } }
                         .decodeSingleOrNull<User>()
                     
                     if (user != null && user.role.lowercase() == "guard") {
                         Log.d("SVMS_AUTH", "AuthRepository: Profile verified as GUARD")
+
+                        // Try to load profile picture from profile_svms table
+                        if (authId != null) {
+                            try {
+                                val profileSvms = supabaseClient.postgrest["profile_svms"]
+                                    .select { filter { eq("guard_id", authId) } }
+                                    .decodeSingleOrNull<ProfileSvms>()
+                                if (profileSvms?.profileUrl != null) {
+                                    user = user.copy(profileImageUrl = profileSvms.profileUrl)
+                                    Log.d("SVMS_AUTH", "AuthRepository: Profile URL loaded from profile_svms")
+                                }
+                            } catch (e: Exception) {
+                                Log.e("SVMS_AUTH", "AuthRepository: profile_svms fetch error", e)
+                            }
+                        }
+
                         _currentUser.value = user
                         // Update cache
                         prefs.edit().putString("current_user", Json.encodeToString(user)).apply()
@@ -136,7 +153,27 @@ class AuthRepository @Inject constructor(
     suspend fun updateProfileImage(imageUrl: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val user = _currentUser.value ?: return@withContext Result.failure(Exception("Not logged in"))
+            val session = supabaseClient.auth.currentSessionOrNull()
+            val authId = session?.user?.id ?: user.authUserId 
+                ?: return@withContext Result.failure(Exception("Auth identification missing"))
+
+            // 1. Update/Insert into profile_svms table (the new table)
+            val profileEntry = ProfileSvms(
+                guardId = authId,
+                profileUrl = imageUrl
+            )
             
+            try {
+                supabaseClient.postgrest["profile_svms"].upsert(profileEntry) {
+                    onConflict = "guard_id"
+                }
+                Log.d("SVMS_AUTH", "Successfully upserted to profile_svms")
+            } catch (e: Exception) {
+                Log.e("SVMS_AUTH", "Error upserting to profile_svms", e)
+                // Continue anyway to update the main users table
+            }
+            
+            // 2. Update the users table as well for general profile access
             supabaseClient.postgrest["users"]
                 .update({
                     set("profile_image_url", imageUrl)
@@ -147,9 +184,15 @@ class AuthRepository @Inject constructor(
                 }
             
             // Update local user state
-            _currentUser.value = user.copy(profileImageUrl = imageUrl)
+            val updatedUser = user.copy(profileImageUrl = imageUrl)
+            _currentUser.value = updatedUser
+            
+            // Update cache
+            prefs.edit().putString("current_user", Json.encodeToString(updatedUser)).apply()
+            
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e("SVMS_AUTH", "updateProfileImage error", e)
             Result.failure(e)
         }
     }
@@ -337,6 +380,8 @@ class ViolationRepository @Inject constructor(
 
                 violation.apply {
                     studentName = student?.fullName ?: "Unknown Student"
+                    studentCollege = student?.college
+                    studentCourse = student?.course
                     violationType = type?.name ?: "Unknown Type"
                     violationCategory = if ((type?.severity ?: 1) <= 1) ViolationCategory.MINOR else ViolationCategory.MAJOR
                     guardName = guard?.fullName ?: "Unknown Guard"
@@ -428,6 +473,8 @@ class ViolationRepository @Inject constructor(
 
             violation.apply {
                 studentName = student?.fullName ?: "Unknown Student"
+                studentCollege = student?.college
+                studentCourse = student?.course
                 violationType = type?.name ?: "Unknown Type"
                 violationCategory = if ((type?.severity ?: 1) <= 1) ViolationCategory.MINOR else ViolationCategory.MAJOR
                 guardName = guard?.fullName ?: "Unknown Guard"

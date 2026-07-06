@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -61,25 +62,57 @@ fun HistoryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Violation History", 
+                        "History", 
                         fontWeight = FontWeight.Bold, 
                         color = Color.White, 
-                        fontSize = 19.sp,
+                        fontSize = 18.sp,
                         letterSpacing = (-0.3).sp
                     )
                 },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White, modifier = Modifier.size(26.dp))
+                        if (state.currentUser?.profileImageUrl != null) {
+                            AsyncImage(
+                                model = state.currentUser?.profileImageUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clip(CircleShape)
+                                    .border(1.5.dp, Color.White.copy(alpha = 0.5f), CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = state.currentUser?.firstName?.take(1) ?: "A",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PurpleDark)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PurplePrimary,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                modifier = Modifier.shadow(4.dp)
             )
         },
         bottomBar = {
             NavigationBar(
-                containerColor = CardWhite,
-                tonalElevation = 8.dp
+                containerColor = PurplePrimary,
+                tonalElevation = 8.dp,
+                modifier = Modifier.shadow(8.dp)
             ) {
                 NavigationBarItem(
                     selected = false,
@@ -87,8 +120,11 @@ fun HistoryScreen(
                     icon = { Icon(Icons.Default.QrCodeScanner, contentDescription = "Scan", modifier = Modifier.size(24.dp)) },
                     label = { Text("Scan", fontWeight = FontWeight.Medium, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
-                        unselectedIconColor = TextSecondary,
-                        unselectedTextColor = TextSecondary
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                        unselectedTextColor = Color.White.copy(alpha = 0.6f),
+                        indicatorColor = PurpleLight
                     )
                 )
                 NavigationBarItem(
@@ -97,9 +133,11 @@ fun HistoryScreen(
                     icon = { Icon(Icons.Default.History, contentDescription = "History", modifier = Modifier.size(24.dp)) },
                     label = { Text("History", fontWeight = FontWeight.Bold, fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = PurplePrimary,
-                        selectedTextColor = PurplePrimary,
-                        indicatorColor = PurpleContainer
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                        unselectedTextColor = Color.White.copy(alpha = 0.6f),
+                        indicatorColor = PurpleLight
                     )
                 )
             }
@@ -118,7 +156,7 @@ fun HistoryScreen(
                 Column {
                     Text(
                         "Today's Reports",
-                        fontSize = 24.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = TextPrimary,
                         letterSpacing = (-0.5).sp
@@ -180,7 +218,7 @@ fun HistoryScreen(
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = GoldAccent,
-                                        letterSpacing = 1.2.sp
+                                        letterSpacing = 0.8.sp
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -317,102 +355,95 @@ private fun ViolationCard(violation: Violation, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .border(1.dp, BorderColor.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = CardWhite),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp, pressedElevation = 4.dp)
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.1f)
+            ),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                // Left: Avatar Icon
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(PurpleContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = violation.studentName.split(" ").mapNotNull { it.firstOrNull() }.take(2).joinToString(""),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PurplePrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Middle: Student Info
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = violation.studentName,
-                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = TextPrimary,
+                        maxLines = 1,
                         letterSpacing = (-0.2).sp
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "ID: ${violation.studentId}",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "Institutional ID: ${violation.studentId}",
+                        fontSize = 11.sp,
                         color = TextSecondary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Medium
                     )
                 }
+
+                // Right: Category Badge
                 ViolationCategoryChip(category = violation.violationCategory)
             }
-            
-            Spacer(modifier = Modifier.height(14.dp))
-            
-            Surface(
-                color = PurpleContainer.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = violation.violationType,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = PurpleDark,
-                    lineHeight = 18.sp
-                )
-            }
 
-            Spacer(modifier = Modifier.height(14.dp))
-            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Info Row (Similar to the reference grid)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(BackgroundGray.copy(alpha = 0.5f))
+                    .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.AccessTime,
-                        contentDescription = null,
-                        tint = TextSecondary,
-                        modifier = Modifier.size(15.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = violation.violationTime,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = TextSecondary,
-                        fontWeight = FontWeight.Bold
-                    )
+                Column {
+                    Text("OFFENSE TYPE", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
+                    Text(violation.violationType, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = PurplePrimary, maxLines = 1)
                 }
                 
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(BackgroundGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = "Details",
-                        tint = PurplePrimary,
-                        modifier = Modifier.size(18.dp)
-                    )
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("RECORDED AT", fontSize = 9.sp, fontWeight = FontWeight.Black, color = TextSecondary, letterSpacing = 0.5.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.AccessTime, contentDescription = null, tint = PurplePrimary, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(violation.violationTime, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                    }
                 }
             }
 
             if (violation.evidenceImageUrl != null) {
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 AsyncImage(
                     model = violation.evidenceImageUrl,
-                    contentDescription = "Evidence Image",
+                    contentDescription = "Evidence Preview",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(170.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .border(1.dp, BorderColor.copy(alpha = 0.3f), RoundedCornerShape(16.dp)),
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop
                 )
             }

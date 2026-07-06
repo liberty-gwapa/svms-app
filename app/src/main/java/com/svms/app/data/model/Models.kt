@@ -179,6 +179,10 @@ data class Violation(
     @Transient
     var studentName: String = ""
     @Transient
+    var studentCollege: String? = null
+    @Transient
+    var studentCourse: String? = null
+    @Transient
     var violationType: String = ""
     @Transient
     var violationCategory: ViolationCategory = ViolationCategory.MINOR
@@ -231,4 +235,14 @@ data class CloudinaryResponse(
     @SerialName("created_at")
     @GsonName("created_at")
     val createdAt: String? = null
+)
+
+@Serializable
+data class ProfileSvms(
+    val id: String? = null,
+    @SerialName("guard_id")
+    val guardId: String,
+    @SerialName("profile_url")
+    val profileUrl: String? = null,
+    val date: String? = null
 )
