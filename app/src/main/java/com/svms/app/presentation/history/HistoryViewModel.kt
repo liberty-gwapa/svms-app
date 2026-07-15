@@ -46,7 +46,7 @@ class HistoryViewModel @Inject constructor(
                 _uiState.update { 
                     it.copy(
                         violations = violations,
-                        todayReportsCount = violations.size
+                        todayReportsCount = if (it.currentFilter == HistoryFilter.TODAY) violations.size else it.todayReportsCount
                     )
                 }
                 applyFilter()
@@ -55,8 +55,8 @@ class HistoryViewModel @Inject constructor(
         
         observeCurrentUser()
         fetchDepartments()
+        // Ensure we always start with TODAY'S reports data
         refreshHistory()
-        fetchAllTimeIncidents()
     }
 
     private fun fetchDepartments() {
@@ -89,7 +89,6 @@ class HistoryViewModel @Inject constructor(
 
     fun setFilter(filter: HistoryFilter) {
         _uiState.update { it.copy(currentFilter = filter) }
-        applyFilter()
         if (filter == HistoryFilter.ALL_TIME) {
             fetchAllTimeIncidents()
         } else {
@@ -104,16 +103,7 @@ class HistoryViewModel @Inject constructor(
 
     private fun applyFilter() {
         _uiState.update { state ->
-            val baseList = if (state.currentFilter == HistoryFilter.TODAY) {
-                state.violations
-            } else {
-                state.violations // This will be updated by fetchAllTimeIncidents or we should use a different storage
-                // Actually, refreshHistory and fetchAllTimeIncidents update state.violations and filteredViolations
-                // Let's refine this to make it more robust.
-                state.violations 
-            }
-            
-            val filtered = baseList.filter { violation ->
+            val filtered = state.violations.filter { violation ->
                 state.selectedDepartment == null || 
                 violation.studentCourse?.equals(state.selectedDepartment, ignoreCase = true) == true
             }
