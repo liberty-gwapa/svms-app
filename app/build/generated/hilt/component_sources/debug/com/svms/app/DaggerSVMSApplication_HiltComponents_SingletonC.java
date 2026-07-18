@@ -415,27 +415,27 @@ public final class DaggerSVMSApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_svms_app_presentation_login_LoginViewModel = "com.svms.app.presentation.login.LoginViewModel";
+      static String com_svms_app_presentation_scanner_ScannerViewModel = "com.svms.app.presentation.scanner.ScannerViewModel";
 
-      static String com_svms_app_presentation_notification_NotificationViewModel = "com.svms.app.presentation.notification.NotificationViewModel";
+      static String com_svms_app_presentation_login_LoginViewModel = "com.svms.app.presentation.login.LoginViewModel";
 
       static String com_svms_app_presentation_profile_ProfileViewModel = "com.svms.app.presentation.profile.ProfileViewModel";
 
       static String com_svms_app_presentation_violation_details_ViolationDetailsViewModel = "com.svms.app.presentation.violation.details.ViolationDetailsViewModel";
 
-      static String com_svms_app_presentation_violation_ViolationViewModel = "com.svms.app.presentation.violation.ViolationViewModel";
-
       static String com_svms_app_presentation_splash_SplashViewModel = "com.svms.app.presentation.splash.SplashViewModel";
 
       static String com_svms_app_presentation_history_HistoryViewModel = "com.svms.app.presentation.history.HistoryViewModel";
 
-      static String com_svms_app_presentation_scanner_ScannerViewModel = "com.svms.app.presentation.scanner.ScannerViewModel";
+      static String com_svms_app_presentation_notification_NotificationViewModel = "com.svms.app.presentation.notification.NotificationViewModel";
+
+      static String com_svms_app_presentation_violation_ViolationViewModel = "com.svms.app.presentation.violation.ViolationViewModel";
+
+      @KeepFieldType
+      ScannerViewModel com_svms_app_presentation_scanner_ScannerViewModel2;
 
       @KeepFieldType
       LoginViewModel com_svms_app_presentation_login_LoginViewModel2;
-
-      @KeepFieldType
-      NotificationViewModel com_svms_app_presentation_notification_NotificationViewModel2;
 
       @KeepFieldType
       ProfileViewModel com_svms_app_presentation_profile_ProfileViewModel2;
@@ -444,16 +444,16 @@ public final class DaggerSVMSApplication_HiltComponents_SingletonC {
       ViolationDetailsViewModel com_svms_app_presentation_violation_details_ViolationDetailsViewModel2;
 
       @KeepFieldType
-      ViolationViewModel com_svms_app_presentation_violation_ViolationViewModel2;
-
-      @KeepFieldType
       SplashViewModel com_svms_app_presentation_splash_SplashViewModel2;
 
       @KeepFieldType
       HistoryViewModel com_svms_app_presentation_history_HistoryViewModel2;
 
       @KeepFieldType
-      ScannerViewModel com_svms_app_presentation_scanner_ScannerViewModel2;
+      NotificationViewModel com_svms_app_presentation_notification_NotificationViewModel2;
+
+      @KeepFieldType
+      ViolationViewModel com_svms_app_presentation_violation_ViolationViewModel2;
     }
   }
 
@@ -517,24 +517,21 @@ public final class DaggerSVMSApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_svms_app_presentation_notification_NotificationViewModel = "com.svms.app.presentation.notification.NotificationViewModel";
-
       static String com_svms_app_presentation_history_HistoryViewModel = "com.svms.app.presentation.history.HistoryViewModel";
 
       static String com_svms_app_presentation_splash_SplashViewModel = "com.svms.app.presentation.splash.SplashViewModel";
 
-      static String com_svms_app_presentation_scanner_ScannerViewModel = "com.svms.app.presentation.scanner.ScannerViewModel";
-
-      static String com_svms_app_presentation_violation_ViolationViewModel = "com.svms.app.presentation.violation.ViolationViewModel";
-
       static String com_svms_app_presentation_violation_details_ViolationDetailsViewModel = "com.svms.app.presentation.violation.details.ViolationDetailsViewModel";
-
-      static String com_svms_app_presentation_profile_ProfileViewModel = "com.svms.app.presentation.profile.ProfileViewModel";
 
       static String com_svms_app_presentation_login_LoginViewModel = "com.svms.app.presentation.login.LoginViewModel";
 
-      @KeepFieldType
-      NotificationViewModel com_svms_app_presentation_notification_NotificationViewModel2;
+      static String com_svms_app_presentation_profile_ProfileViewModel = "com.svms.app.presentation.profile.ProfileViewModel";
+
+      static String com_svms_app_presentation_violation_ViolationViewModel = "com.svms.app.presentation.violation.ViolationViewModel";
+
+      static String com_svms_app_presentation_notification_NotificationViewModel = "com.svms.app.presentation.notification.NotificationViewModel";
+
+      static String com_svms_app_presentation_scanner_ScannerViewModel = "com.svms.app.presentation.scanner.ScannerViewModel";
 
       @KeepFieldType
       HistoryViewModel com_svms_app_presentation_history_HistoryViewModel2;
@@ -543,19 +540,22 @@ public final class DaggerSVMSApplication_HiltComponents_SingletonC {
       SplashViewModel com_svms_app_presentation_splash_SplashViewModel2;
 
       @KeepFieldType
-      ScannerViewModel com_svms_app_presentation_scanner_ScannerViewModel2;
-
-      @KeepFieldType
-      ViolationViewModel com_svms_app_presentation_violation_ViolationViewModel2;
-
-      @KeepFieldType
       ViolationDetailsViewModel com_svms_app_presentation_violation_details_ViolationDetailsViewModel2;
+
+      @KeepFieldType
+      LoginViewModel com_svms_app_presentation_login_LoginViewModel2;
 
       @KeepFieldType
       ProfileViewModel com_svms_app_presentation_profile_ProfileViewModel2;
 
       @KeepFieldType
-      LoginViewModel com_svms_app_presentation_login_LoginViewModel2;
+      ViolationViewModel com_svms_app_presentation_violation_ViolationViewModel2;
+
+      @KeepFieldType
+      NotificationViewModel com_svms_app_presentation_notification_NotificationViewModel2;
+
+      @KeepFieldType
+      ScannerViewModel com_svms_app_presentation_scanner_ScannerViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
