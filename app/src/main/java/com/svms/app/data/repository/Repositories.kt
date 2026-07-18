@@ -445,8 +445,18 @@ class ViolationRepository @Inject constructor(
             
             // 1. Insert into Supabase violations table
             supabaseClient.postgrest["violations"].insert(violation)
+            Log.d("SVMS_DEBUG", "Successfully inserted into 'violations'")
             
-            // 2. Create notification for SAO Admin
+            // 2. Also insert into violation_record table
+            try {
+                Log.d("SVMS_DEBUG", "Attempting sync to 'violation_record'...")
+                supabaseClient.postgrest["violation_record"].insert(violation)
+                Log.i("SVMS_DEBUG", "Sync to 'violation_record' successful")
+            } catch (re: Exception) {
+                Log.e("SVMS_DEBUG", "CRITICAL: Sync to 'violation_record' FAILED", re)
+            }
+            
+            // 3. Create notification for SAO Admin
             try {
                 val notification = NotificationSvms(
                     roleTarget = "sao_admin",
